@@ -302,13 +302,6 @@ class CommandeController extends Controller
         if ($commande->statut !== 'archivee') {
             return back()->with('error', 'Commande non archivée.');
         }
-
-        // Restore to 'cloturee' if it was valid, or 'annulee'. 
-        // Simple logic: Restore to 'brouillon' allows full edit, but 'cloturee' is safer history.
-        // Let's check history to see previous status?
-        // Simple method: Restore to 'brouillon' so it can be managed again, or 'cloturee' (read-only).
-        // User asked "Restaure une commande archivé".
-        // Let's set it to 'cloturee' by default as safe state.
         $commande->update(['statut' => 'cloturee', 'archived_at' => null]);
         $commande->log('restored', 'Commande restaurée depuis les archives');
 
@@ -367,50 +360,8 @@ class CommandeController extends Controller
 
     public function exportPdf($id)
     {
-        // Simple logic: Redirect to print view with a query param that could trigger auto-print
-        // Or strictly strictly: "Génère un PDF".
-        // Without libraries, we can't generate a binary PDF.
-        // We will return the print view with a hint to save as PDF.
         return redirect()->route('commandes.print', ['id' => $id, 'mode' => 'pdf']);
     }
 
-    public function exportExcel($id)
-    {
-        $commande = Commande::with(['client', 'produits'])->findOrFail($id);
-        
-        $filename = "commande_{$id}.csv";
-        $headers = [
-            "Content-type"        => "text/csv",
-            "Content-Disposition" => "attachment; filename=$filename",
-            "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
-        ];
 
-        $callback = function() use ($commande) {
-            $file = fopen('php://output', 'w');
-            
-            // Header info
-            fputcsv($file, ['Commande ID', $commande->id]);
-            fputcsv($file, ['Client', $commande->client->nom]);
-            fputcsv($file, ['Date', $commande->date_commande->format('Y-m-d')]);
-            fputcsv($file, ['Total', $commande->montant_total]);
-            fputcsv($file, []);
-            
-            // Products
-            fputcsv($file, ['Produit', 'Quantite', 'Prix Unitaire', 'Total Ligne']);
-            foreach ($commande->produits as $produit) {
-                fputcsv($file, [
-                    $produit->nom, 
-                    $produit->pivot->quantite, 
-                    $produit->pivot->prix_unitaire,
-                    $produit->pivot->quantite * $produit->pivot->prix_unitaire
-                ]);
-            }
-            
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
-    }
 }

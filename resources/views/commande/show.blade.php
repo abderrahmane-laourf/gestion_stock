@@ -23,13 +23,9 @@
             <a href="{{ route('commandes.print', $commande->id) }}" target="_blank" class="btn btn-outline-dark">
                 <i class="bi bi-printer"></i> Imprimer
             </a>
-            <button type="button" class="btn btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown">
-                Export
-            </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{{ route('commandes.exportPdf', $commande->id) }}">PDF</a></li>
-                <li><a class="dropdown-item" href="{{ route('commandes.exportExcel', $commande->id) }}">Excel (CSV)</a></li>
-            </ul>
+            <a href="{{ route('commandes.exportPdf', $commande->id) }}" class="btn btn-outline-dark">
+                <i class="bi bi-file-earmark-pdf"></i> Export PDF
+            </a>
         </div>
     </div>
 

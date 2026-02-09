@@ -63,6 +63,5 @@ Route::post('/commandes/{id}/restore', [CommandeController::class, 'restore'])->
 
 Route::get('/commandes/search/advanced', [CommandeController::class, 'search'])->name('commandes.search');
 Route::get('/commandes/{id}/export-pdf', [CommandeController::class, 'exportPdf'])->name('commandes.exportPdf');
-Route::get('/commandes/{id}/export-excel', [CommandeController::class, 'exportExcel'])->name('commandes.exportExcel');
 Route::get('/commandes/{id}/print', [CommandeController::class, 'print'])->name('commandes.print');
 Route::get('/commandes/{id}/history', [CommandeController::class, 'history'])->name('commandes.history');
