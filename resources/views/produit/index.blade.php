@@ -6,9 +6,9 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold text-primary">Liste des Produits</h3>
-        <button type="button" class="btn btn-success shadow-sm" data-bs-toggle="modal" data-bs-target="#createProduitModal">
+        <a href="{{ route('produits.create') }}" class="btn btn-success shadow-sm">
             <i class="bi bi-plus-lg me-2"></i> Nouveau Produit
-        </button>
+        </a>
     </div>
 
     <div class="card shadow-sm border-0">
@@ -97,5 +97,4 @@
         </div>
     </div>
 </div>
-@include('produit.create')
 @endsection

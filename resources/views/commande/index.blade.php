@@ -6,9 +6,9 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold text-primary">Liste des Commandes</h3>
-        <button type="button" class="btn btn-success shadow-sm" data-bs-toggle="modal" data-bs-target="#createCommandeModal">
+        <a href="{{ route('commandes.create') }}" class="btn btn-success shadow-sm">
             <i class="bi bi-plus-lg me-2"></i> Nouvelle Commande
-        </button>
+        </a>
     </div>
 
     <!-- Filters -->
@@ -93,8 +93,5 @@
         </div>
     </div>
 </div>
-
-<!-- Create Modal -->
-@include('commande.create')
 
 @endsection

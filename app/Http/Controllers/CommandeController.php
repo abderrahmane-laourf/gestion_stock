@@ -37,6 +37,18 @@ class CommandeController extends Controller
     }
 
     /**
+     * Afficher le formulaire de création d'une commande
+     * Hna kanjebu la liste dyal les clients w les produits
+     * w kanaffichiwha f la page de création
+     */
+    public function create()
+    {
+        $clients = Client::all();
+        $produits = Produit::all();
+        return view('commande.create', compact('clients', 'produits'));
+    }
+
+    /**
      * Enregistrer une nouvelle commande (brouillon)
      * Hna kanvalidiw les données (client, date, adresse, produits)
      * Kancrééw la commande b statut 'brouillon' w montant 0

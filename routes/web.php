@@ -39,6 +39,7 @@ Route::delete('/produits/{id}', [ProduitController::class, 'destroy'])->name('pr
 
 // les routes de commande
 Route::get('/commandes', [CommandeController::class, 'index'])->name('commandes.index');
+Route::get('/commandes/create', [CommandeController::class, 'create'])->name('commandes.create');
 Route::post('/commandes', [CommandeController::class, 'store'])->name('commandes.store');
 Route::get('/commandes/{id}', [CommandeController::class, 'show'])->name('commandes.show');
 Route::put('/commandes/{id}', [CommandeController::class, 'update'])->name('commandes.update');

@@ -1,33 +1,60 @@
+@extends('layout.app')
 
-<div class="modal fade" id="createClientModal" tabindex="-1" aria-labelledby="createClientModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="createClientModalLabel">Créer un nouveau client</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="{{ route('clients.store') }}" method="POST">
-                    @csrf
-                    <div class="mb-3">
-                        <label for="nom" class="form-label">Nom</label>
-                        <input type="text" class="form-control" id="nom" name="nom" required>
+@section('title', 'Nouveau Client')
+
+@section('content')
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-primary">Nouveau Client</h3>
+        <a href="{{ route('clients.index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Retour
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form action="{{ route('clients.store') }}" method="POST">
+                @csrf
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="nom" class="form-label fw-bold">Nom</label>
+                        <input type="text" class="form-control" id="nom" name="nom" value="{{ old('nom') }}" required>
+                        @error('nom')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
                     </div>
-                    <div class="mb-3">
-                        <label for="prenom" class="form-label">Prénom</label>
-                        <input type="text" class="form-control" id="prenom" name="prenom" required>
+                    <div class="col-md-6 mb-3">
+                        <label for="prenom" class="form-label fw-bold">Prénom</label>
+                        <input type="text" class="form-control" id="prenom" name="prenom" value="{{ old('prenom') }}" required>
+                        @error('prenom')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
                     </div>
-                    <div class="mb-3">
-                        <label for="telephone" class="form-label">Téléphone</label>
-                        <input type="text" class="form-control" id="telephone" name="telephone" required>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="telephone" class="form-label fw-bold">Téléphone</label>
+                        <input type="text" class="form-control" id="telephone" name="telephone" value="{{ old('telephone') }}" required>
+                        @error('telephone')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
                     </div>
-                    <div class="mb-3">
-                        <label for="adresse" class="form-label">Adresse</label>
-                        <input type="text" class="form-control" id="adresse" name="adresse" required>
+                    <div class="col-md-6 mb-3">
+                        <label for="adresse" class="form-label fw-bold">Adresse</label>
+                        <input type="text" class="form-control" id="adresse" name="adresse" value="{{ old('adresse') }}" required>
+                        @error('adresse')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
                     </div>
-                    <button type="submit" class="btn btn-primary">Enregistrer</button>
-                </form>
-            </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-lg me-1"></i> Enregistrer
+                    </button>
+                    <a href="{{ route('clients.index') }}" class="btn btn-secondary">Annuler</a>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+@endsection
