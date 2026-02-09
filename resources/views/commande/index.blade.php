@@ -85,9 +85,9 @@
                     </tbody>
                 </table>
             </div>
-            @if(method_exists($commandes, 'links'))
+            @if($commandes->hasPages())
                 <div class="d-flex justify-content-center mt-3">
-                    {{ $commandes->links() }}
+                    {{ $commandes->withQueryString()->links() }}
                 </div>
             @endif
         </div>

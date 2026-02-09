@@ -10,7 +10,7 @@ class CategorieController extends Controller
     public function index(Request $request)
     {
         //filtrage par intitule
-        $categories = Categorie::where('intitule','like','%'.$request->intitule.'%')->get();
+        $categories = Categorie::where('intitule','like','%'.$request->intitule.'%')->paginate(10);
         return view('categorie.index',compact('categories')); 
     }
     public function create()

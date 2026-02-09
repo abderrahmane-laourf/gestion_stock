@@ -16,7 +16,7 @@ class ProduitController extends Controller
         // Filtrage par nom
         $produits = Produit::with('categorie')
             ->where('nom', 'like', '%' . $request->nom . '%')
-            ->get();
+            ->paginate(10);
         
         $categories = Categorie::all();
         

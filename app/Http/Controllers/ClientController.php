@@ -10,7 +10,7 @@ class ClientController extends Controller
     public function index(Request $request)
     {
         //filtrage par nom
-        $clients = Client::where('nom','like','%'.$request->nom.'%')->get();
+        $clients = Client::where('nom','like','%'.$request->nom.'%')->paginate(10);
         return view('client.index',compact('clients')); 
     }
 

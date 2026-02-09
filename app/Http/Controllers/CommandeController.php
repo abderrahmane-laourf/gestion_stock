@@ -30,7 +30,7 @@ class CommandeController extends Controller
             $query->whereDate('date_commande', '<=', $request->date_fin);
         }
 
-        $commandes = $query->orderBy('date_commande', 'desc')->get();
+        $commandes = $query->orderBy('date_commande', 'desc')->paginate(10);
         $clients = Client::all();
 
         return view('commande.index', compact('commandes', 'clients'));
@@ -229,10 +229,9 @@ class CommandeController extends Controller
             $query->where('montant_total', '>=', $request->min_amount);
         }
 
-        $commandes = $query->orderBy('date_commande', 'desc')->get();
+        $commandes = $query->orderBy('date_commande', 'desc')->paginate(10);
         $clients = Client::all();
 
-        // Return same index view but with results
         return view('commande.index', compact('commandes', 'clients'));
     }
 
