@@ -13,15 +13,12 @@ class Commande extends Model
         'client_id',
         'date_commande',
         'adresse_livraison',
-        'statut',
         'montant_total',
-        'archived_at',
     ];
 
     protected $casts = [
         'date_commande' => 'date',
         'montant_total' => 'decimal:2',
-        'archived_at' => 'datetime',
     ];
 
     // Relation avec Client

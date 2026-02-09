@@ -35,7 +35,7 @@
         <h3>Client</h3>
         <div><strong>Nom:</strong> {{ $commande->client->nom }} {{ $commande->client->prenom }}</div>
         <div><strong>Adresse de livraison:</strong> {{ $commande->adresse_livraison }}</div>
-        <div><strong>Statut:</strong> {{ ucfirst($commande->statut) }}</div>
+
     </div>
 
     <table>

@@ -6,12 +6,13 @@ use Illuminate\Http\Request;
 use App\Models\Commande;
 use App\Models\Client;
 use App\Models\Produit;
-use Illuminate\Support\Facades\DB;
 
 class CommandeController extends Controller
 {
     /**
-     * Display a listing of commandes with filters
+     * Afficher la liste des commandes avec filtres
+     * Hna kanjebu ga3 les commandes, w kanfiltriw hasb le client, date de début/fin
+     * Les résultats sont triés par date décroissante (les plus récentes en premier)
      */
     public function index(Request $request)
     {
@@ -21,9 +22,7 @@ class CommandeController extends Controller
         if ($request->client_id) {
             $query->where('client_id', $request->client_id);
         }
-        if ($request->statut) {
-            $query->where('statut', $request->statut);
-        }
+
         if ($request->date_debut) {
             $query->whereDate('date_commande', '>=', $request->date_debut);
         }
@@ -38,7 +37,10 @@ class CommandeController extends Controller
     }
 
     /**
-     * Store a new commande (brouillon)
+     * Enregistrer une nouvelle commande (brouillon)
+     * Hna kanvalidiw les données (client, date, adresse, produits)
+     * Kancrééw la commande b statut 'brouillon' w montant 0
+     * Ila kaynin des produits, kanattachiwhom w kanhasbu le total
      */
     public function store(Request $request)
     {
@@ -61,7 +63,7 @@ class CommandeController extends Controller
             'montant_total' => 0,
         ]);
 
-        $commande->log('created', 'Commande créée (brouillon)');
+        $commande->log('created', 'Commande créée');
 
         // Attach products if provided
         if (isset($validated['produits'])) {
@@ -73,6 +75,7 @@ class CommandeController extends Controller
             }
             
             // Update total
+
             $commande->montant_total = $commande->calculateTotal();
             $commande->save();
         }
@@ -82,7 +85,9 @@ class CommandeController extends Controller
     }
 
     /**
-     * Show commande details with products
+     * Afficher les détails d'une commande avec ses produits
+     * Hna kanjebu la commande m3a le client, les produits, w l'historique
+     * Kan affichiw aussi la liste de tous les produits/clients bach nmodifiw
      */
     public function show($id)
     {
@@ -94,15 +99,13 @@ class CommandeController extends Controller
     }
 
     /**
-     * Update commande general info
+     * Mettre à jour les informations générales de la commande
+     * Hna kan3edlu le client, la date, w l'adresse de livraison
+     * Kanvalidiw les données, kanfaireuw update, w kanloggiw f l'historique
      */
     public function update(Request $request, $id)
     {
         $commande = Commande::findOrFail($id);
-        
-        if ($commande->statut !== 'brouillon') {
-            return back()->with('error', 'Impossible de modifier une commande validée.');
-        }
 
         $validated = $request->validate([
             'client_id' => 'required|exists:clients,id',
@@ -116,22 +119,29 @@ class CommandeController extends Controller
         return back()->with('success', 'Commande mise à jour.');
     }
 
+    /**
+     * Supprimer une commande
+     * Hna kanmshu la commande men la base de données
+     * Kanreturniw l la liste m3a un message de succès
+     */
     public function destroy($id)
     {
         $commande = Commande::findOrFail($id);
-        if ($commande->statut !== 'brouillon' && $commande->statut !== 'annulee') {
-            return back()->with('error', 'Seules les commandes brouillon ou annulées peuvent être supprimées.');
-        }
         $commande->delete();
         return redirect()->route('commandes.index')->with('success', 'Commande supprimée.');
     }
 
-    // --- Product Management ---
+    // --- Gestion des produits dans la commande ---
 
+    /**
+     * Ajouter un produit à la commande
+     * Hna kancheckkiw wach le produit deja kayn f la commande
+     * Ila makaynch, kanattachiwiw m3a la quantité w le prix actuel
+     * Kanhesbu le total de nouveau w kanloggiw l'action
+     */
     public function addProduit(Request $request, $id)
     {
         $commande = Commande::findOrFail($id);
-        if ($commande->statut !== 'brouillon') return back()->with('error', 'Commande verrouillée.');
 
         $request->validate([
             'produit_id' => 'required|exists:produits,id',
@@ -156,10 +166,14 @@ class CommandeController extends Controller
         return back()->with('success', 'Produit ajouté.');
     }
 
+    /**
+     * Retirer un produit de la commande
+     * Hna kanfslu le produit men la commande (detach)
+     * Kan3awdu nhesbu le montant total w kanloggiw
+     */
     public function removeProduit($commandeId, $produitId)
     {
         $commande = Commande::findOrFail($commandeId);
-        if ($commande->statut !== 'brouillon') return back()->with('error', 'Commande verrouillée.');
 
         $commande->produits()->detach($produitId);
         $this->recalculate($commandeId);
@@ -168,12 +182,16 @@ class CommandeController extends Controller
         return back()->with('success', 'Produit retiré.');
     }
 
-    // --- New Features ---
+    // --- Fonctionnalités supplémentaires ---
 
+    /**
+     * Recalculer le montant total de la commande
+     * Hna kanjm3u (quantité × prix) dyal kol produit
+     * Ila t3aytna liha men le route directement, kanloggiw w kanbiinuw message
+     */
     public function recalculate($id)
     {
         $commande = Commande::findOrFail($id);
-        if ($commande->statut !== 'brouillon') return back()->with('error', 'Commande verrouillée.');
 
         $total = $commande->calculateTotal();
         $commande->update(['montant_total' => $total]);
@@ -185,147 +203,28 @@ class CommandeController extends Controller
         }
     }
 
-    public function validateOrder($id)
-    {
-        $commande = Commande::with('produits')->findOrFail($id);
-        
-        if ($commande->statut !== 'brouillon') {
-            return back()->with('error', 'Cette commande n\'est pas un brouillon.');
-        }
-
-        // Check stock
-        foreach ($commande->produits as $produit) {
-            if ($produit->stock < $produit->pivot->quantite) {
-                return back()->with('error', "Stock insuffisant pour {$produit->nom} (Dispo: {$produit->stock})");
-            }
-        }
-
-        DB::transaction(function () use ($commande) {
-            // Deduct stock
-            foreach ($commande->produits as $produit) {
-                $produit->decrement('stock', $produit->pivot->quantite);
-            }
-            
-            $commande->update(['statut' => 'confirmee']);
-            $commande->log('validated', 'Commande validée et stock mis à jour');
-        });
-
-        return back()->with('success', 'Commande validée avec succès.');
-    }
-
-    public function cancel($id)
-    {
-        $commande = Commande::with('produits')->findOrFail($id);
-        
-        if (in_array($commande->statut, ['annulee', 'livree', 'cloturee'])) {
-            return back()->with('error', 'Impossible d\'annuler cette commande.');
-        }
-
-        DB::transaction(function () use ($commande) {
-            // Restore stock if it was validated
-            if ($commande->statut !== 'brouillon') {
-                foreach ($commande->produits as $produit) {
-                    $produit->increment('stock', $produit->pivot->quantite);
-                }
-            }
-
-            $commande->update(['statut' => 'annulee']);
-            $commande->log('cancelled', 'Commande annulée, stock restauré si nécessaire');
-        });
-
-        return back()->with('success', 'Commande annulée.');
-    }
-
-    public function ship($id)
-    {
-        $commande = Commande::findOrFail($id);
-        
-        if ($commande->statut !== 'confirmee') {
-            return back()->with('error', 'Seule une commande confirmée peut être expédiée.');
-        }
-
-        $commande->update(['statut' => 'en_cours']);
-        $commande->log('shipped', 'Commande expédiée (en cours)');
-
-        return back()->with('success', 'Commande marquée comme en cours de livraison.');
-    }
-
-    public function deliver($id)
-    {
-        $commande = Commande::findOrFail($id);
-        
-        if (!in_array($commande->statut, ['confirmee', 'en_cours'])) {
-            return back()->with('error', 'Seule une commande confirmée ou en cours peut être livrée.');
-        }
-
-        $commande->update(['statut' => 'livree']);
-        $commande->log('delivered', 'Commande marquée comme livrée');
-
-        return back()->with('success', 'Commande livrée.');
-    }
-
-    public function close($id)
-    {
-        $commande = Commande::findOrFail($id);
-        
-        if ($commande->statut !== 'livree') {
-            return back()->with('error', 'Il faut livrer la commande avant de la clôturer.');
-        }
-
-        $commande->update(['statut' => 'cloturee']);
-        $commande->log('closed', 'Commande clôturée définitivement');
-
-        return back()->with('success', 'Commande clôturée.');
-    }
-
-    public function archive($id)
-    {
-        $commande = Commande::findOrFail($id);
-        
-        if (!in_array($commande->statut, ['cloturee', 'annulee'])) {
-            return back()->with('error', 'Seules les commandes clôturées ou annulées peuvent être archivées.');
-        }
-
-        $commande->update([
-            'statut' => 'archivee',
-            'archived_at' => now()
-        ]);
-        $commande->log('archived', 'Commande archivée');
-
-        return back()->with('success', 'Commande archivée.');
-    }
-
-    public function restore($id)
-    {
-        $commande = Commande::findOrFail($id);
-        
-        if ($commande->statut !== 'archivee') {
-            return back()->with('error', 'Commande non archivée.');
-        }
-        $commande->update(['statut' => 'cloturee', 'archived_at' => null]);
-        $commande->log('restored', 'Commande restaurée depuis les archives');
-
-        return back()->with('success', 'Commande restaurée.');
-    }
-
+    /**
+     * Recherche avancée des commandes
+     * Kanqalbu b l'ID wla smiya dyal le client, w kanfiltriw b le montant minimum
+     */
     public function search(Request $request)
     {
+        // Njibuw les commandes m3a les clients dyalhom
         $query = Commande::with('client');
 
-        if ($request->filled('q')) {
-            $q = $request->q;
-            $query->where(function($sub) use ($q) {
-                $sub->where('id', $q)
-                    ->orWhereHas('client', function($c) use ($q) {
-                        $c->where('nom', 'like', "%$q%");
-                    });
-            });
+        // Ila l'utilisateur dkhal chi haja f champ de recherche
+        if ($request->filled('recherche')) {
+            $recherche = $request->recherche;
+
+            // Kanqalbuw 3la l'ID dyal la commande
+            $query->where('id', $recherche)
+                  // Wla kanqalbuw 3la smiya dyal le client
+                  ->orWhereHas('client', function($c) use ($recherche) {
+                      $c->where('nom', 'like', "%$recherche%");
+                  });
         }
         
-        if ($request->filled('statut')) {
-            $query->where('statut', $request->statut);
-        }
-        
+        // Ila l'utilisateur dkhal montant minimum, kanfiltriw bih
         if ($request->filled('min_amount')) {
             $query->where('montant_total', '>=', $request->min_amount);
         }
@@ -337,6 +236,11 @@ class CommandeController extends Controller
         return view('commande.index', compact('commandes', 'clients'));
     }
 
+    /**
+     * Notifier le client (simulation)
+     * Hna kansimuliw l'envoi d'une notification l le client
+     * Makatb3at bessa7, ghir kanloggiw f l'historique
+     */
     public function notifyClient($id)
     {
         $commande = Commande::with('client')->findOrFail($id);
@@ -346,18 +250,33 @@ class CommandeController extends Controller
         return back()->with('success', "Notification envoyée à {$commande->client->nom} (Simulation).");
     }
 
+    /**
+     * Afficher l'historique d'une commande
+     * Hna kanbiynu ga3 les actions lli wq3u 3la had la commande
+     * (Création, modification, ajout/suppression de produit...)
+     */
     public function history($id)
     {
         $commande = Commande::with('history')->findOrFail($id);
         return view('commande.history', compact('commande'));
     }
 
+    /**
+     * Afficher la page d'impression de la commande
+     * Hna kanbiyynu la commande f format dial impression (Bon de commande)
+     * Katft7 f tab jdid bach user ytab3ha
+     */
     public function print($id)
     {
         $commande = Commande::with(['client', 'produits'])->findOrFail($id);
         return view('commande.print', compact('commande'));
     }
 
+    /**
+     * Exporter la commande en PDF
+     * Hna kan3amlu redirect l la page dial print b le mode PDF
+     * Hiya nfss la page dyal print ghir b paramètre zayda
+     */
     public function exportPdf($id)
     {
         return redirect()->route('commandes.print', ['id' => $id, 'mode' => 'pdf']);

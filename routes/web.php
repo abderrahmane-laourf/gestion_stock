@@ -52,16 +52,8 @@ Route::get('/commandes/{id}/total', [CommandeController::class, 'calculateTotal'
 
 // Additional Commande Actions
 Route::post('/commandes/{id}/recalculate', [CommandeController::class, 'recalculate'])->name('commandes.recalculate');
-Route::post('/commandes/{id}/validate', [CommandeController::class, 'validateOrder'])->name('commandes.validate');
-Route::post('/commandes/{id}/cancel', [CommandeController::class, 'cancel'])->name('commandes.cancel');
-Route::post('/commandes/{id}/ship', [CommandeController::class, 'ship'])->name('commandes.ship');
-Route::post('/commandes/{id}/deliver', [CommandeController::class, 'deliver'])->name('commandes.deliver');
-Route::post('/commandes/{id}/close', [CommandeController::class, 'close'])->name('commandes.close');
 Route::post('/commandes/{id}/notify', [CommandeController::class, 'notifyClient'])->name('commandes.notify');
-Route::post('/commandes/{id}/archive', [CommandeController::class, 'archive'])->name('commandes.archive');
-Route::post('/commandes/{id}/restore', [CommandeController::class, 'restore'])->name('commandes.restore');
 
 Route::get('/commandes/search/advanced', [CommandeController::class, 'search'])->name('commandes.search');
-Route::get('/commandes/{id}/export-pdf', [CommandeController::class, 'exportPdf'])->name('commandes.exportPdf');
 Route::get('/commandes/{id}/print', [CommandeController::class, 'print'])->name('commandes.print');
 Route::get('/commandes/{id}/history', [CommandeController::class, 'history'])->name('commandes.history');

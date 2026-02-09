@@ -8,12 +8,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h3 class="fw-bold text-primary mb-0">Commande #{{ $commande->id }}</h3>
-            <span class="badge bg-{{ $commande->statut == 'brouillon' ? 'secondary' : ($commande->statut == 'confirmee' ? 'primary' : ($commande->statut == 'livree' ? 'success' : ($commande->statut == 'annulee' ? 'danger' : 'dark'))) }}">
-                {{ ucfirst($commande->statut) }}
-            </span>
-            @if($commande->archived_at)
-                <span class="badge bg-warning text-dark">Archivée</span>
-            @endif
+            <span class="badge bg-secondary">Brouillon</span>
         </div>
         
         <div class="btn-group">
@@ -23,9 +18,6 @@
             <a href="{{ route('commandes.print', $commande->id) }}" target="_blank" class="btn btn-outline-dark">
                 <i class="bi bi-printer"></i> Imprimer
             </a>
-            <a href="{{ route('commandes.exportPdf', $commande->id) }}" class="btn btn-outline-dark">
-                <i class="bi bi-file-earmark-pdf"></i> Export PDF
-            </a>
         </div>
     </div>
 
@@ -33,71 +25,10 @@
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body d-flex flex-wrap gap-2">
             <!-- Recalculate -->
-            @if($commande->statut == 'brouillon')
-                <form action="{{ route('commandes.recalculate', $commande->id) }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-info text-white"><i class="bi bi-calculator"></i> Recalculer</button>
-                </form>
-                
-                <!-- Validate -->
-                <form action="{{ route('commandes.validate', $commande->id) }}" method="POST" onsubmit="return confirm('Valider la commande ? Cela déduira le stock.');">
-                    @csrf
-                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> Valider</button>
-                </form>
-            @endif
-
-            <!-- Ship / Deliver -->
-            @if($commande->statut == 'confirmee')
-                <form action="{{ route('commandes.ship', $commande->id) }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-warning text-dark"><i class="bi bi-truck"></i> Expédier</button>
-                </form>
-                
-                <form action="{{ route('commandes.deliver', $commande->id) }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-success"><i class="bi bi-check-all"></i> Marquer Livrée</button>
-                </form>
-            @endif
-
-            <!-- Deliver (from en_cours) -->
-            @if($commande->statut == 'en_cours')
-                <form action="{{ route('commandes.deliver', $commande->id) }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-success"><i class="bi bi-check-all"></i> Marquer Livrée</button>
-                </form>
-            @endif
-
-            <!-- Close -->
-            @if($commande->statut == 'livree')
-                <form action="{{ route('commandes.close', $commande->id) }}" method="POST" onsubmit="return confirm('Clôturer définitivement ?');">
-                    @csrf
-                    <button type="submit" class="btn btn-dark"><i class="bi bi-archive"></i> Clôturer</button>
-                </form>
-            @endif
-
-            <!-- Cancel -->
-            @if(!in_array($commande->statut, ['annulee', 'livree', 'cloturee', 'archivee']))
-                <form action="{{ route('commandes.cancel', $commande->id) }}" method="POST" onsubmit="return confirm('Annuler la commande ?');">
-                    @csrf
-                    <button type="submit" class="btn btn-danger"><i class="bi bi-x-circle"></i> Annuler</button>
-                </form>
-            @endif
-
-            <!-- Archive -->
-            @if(in_array($commande->statut, ['cloturee', 'annulee']) && !$commande->archived_at)
-                <form action="{{ route('commandes.archive', $commande->id) }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-secondary"><i class="bi bi-box-seam"></i> Archiver</button>
-                </form>
-            @endif
-
-            <!-- Restore -->
-            @if($commande->statut == 'archivee')
-                <form action="{{ route('commandes.restore', $commande->id) }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-warning"><i class="bi bi-arrow-counterclockwise"></i> Restaurer</button>
-                </form>
-            @endif
+            <form action="{{ route('commandes.recalculate', $commande->id) }}" method="POST">
+                @csrf
+                <button type="submit" class="btn btn-info text-white"><i class="bi bi-calculator"></i> Recalculer</button>
+            </form>
 
             <!-- Notify -->
             <form action="{{ route('commandes.notify', $commande->id) }}" method="POST">
@@ -126,7 +57,6 @@
                         
                         <div class="mb-3">
                             <label class="form-label fw-bold">Client</label>
-                            @if($commande->statut == 'brouillon')
                                 <select class="form-select" name="client_id" required>
                                     @foreach($clients as $client)
                                         <option value="{{ $client->id }}" {{ $commande->client_id == $client->id ? 'selected' : '' }}>
@@ -134,20 +64,16 @@
                                         </option>
                                     @endforeach
                                 </select>
-                            @else
-                                <input type="text" class="form-control" value="{{ $commande->client->nom }} {{ $commande->client->prenom }}" disabled>
-                                <input type="hidden" name="client_id" value="{{ $commande->client_id }}">
-                            @endif
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-bold">Date</label>
-                            <input type="date" class="form-control" name="date_commande" value="{{ $commande->date_commande->format('Y-m-d') }}" {{ $commande->statut != 'brouillon' ? 'readonly' : '' }} required>
+                            <input type="date" class="form-control" name="date_commande" value="{{ $commande->date_commande->format('Y-m-d') }}" required>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-bold">Adresse de livraison</label>
-                            <textarea class="form-control" name="adresse_livraison" rows="2" {{ $commande->statut != 'brouillon' ? 'readonly' : '' }} required>{{ $commande->adresse_livraison }}</textarea>
+                            <textarea class="form-control" name="adresse_livraison" rows="2" required>{{ $commande->adresse_livraison }}</textarea>
                         </div>
 
                         <div class="mb-3">
@@ -155,9 +81,7 @@
                             <p class="h4 text-success">{{ number_format($commande->montant_total, 2) }} DH</p>
                         </div>
 
-                        @if($commande->statut == 'brouillon')
-                            <button type="submit" class="btn btn-warning w-100">Mettre à jour</button>
-                        @endif
+                        <button type="submit" class="btn btn-warning w-100">Mettre à jour</button>
                     </form>
                 </div>
             </div>
@@ -168,11 +92,9 @@
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Produits</h5>
-                    @if($commande->statut == 'brouillon')
-                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addProduitModal">
-                            <i class="bi bi-plus-lg"></i> Ajouter Produit
-                        </button>
-                    @endif
+                    <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addProduitModal">
+                        <i class="bi bi-plus-lg"></i> Ajouter Produit
+                    </button>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -183,9 +105,7 @@
                                     <th>Prix Unitaire</th>
                                     <th>Quantité</th>
                                     <th>Sous-total</th>
-                                    @if($commande->statut == 'brouillon')
-                                        <th>Actions</th>
-                                    @endif
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -197,15 +117,13 @@
                                         <td class="text-success fw-bold">
                                             {{ number_format($produit->pivot->quantite * $produit->pivot->prix_unitaire, 2) }} DH
                                         </td>
-                                        @if($commande->statut == 'brouillon')
-                                            <td>
-                                                <form action="{{ route('commandes.removeProduit', ['commandeId' => $commande->id, 'produitId' => $produit->id]) }}" method="POST" class="d-inline" onsubmit="return confirm('Retirer ce produit ?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
-                                                </form>
-                                            </td>
-                                        @endif
+                                        <td>
+                                            <form action="{{ route('commandes.removeProduit', ['commandeId' => $commande->id, 'produitId' => $produit->id]) }}" method="POST" class="d-inline" onsubmit="return confirm('Retirer ce produit ?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -222,7 +140,6 @@
 </div>
 
 <!-- Modal Add Product -->
-@if($commande->statut == 'brouillon')
 <div class="modal fade" id="addProduitModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -254,6 +171,5 @@
         </div>
     </div>
 </div>
-@endif
 
 @endsection

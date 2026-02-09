@@ -16,20 +16,9 @@
         <div class="card-header bg-white py-3">
             <form action="{{ route('commandes.search') }}" method="GET" class="row g-3">
                 <div class="col-md-3">
-                    <input type="text" name="q" class="form-control" placeholder="Recherche (ID, Client...)" value="{{ request('q') }}">
+                    <input type="text" name="recherche" class="form-control" placeholder="Recherche (ID, Client...)" value="{{ request('recherche') }}">
                 </div>
-                <div class="col-md-2">
-                    <select name="statut" class="form-select">
-                        <option value="">Tous les statuts</option>
-                        <option value="brouillon" {{ request('statut') == 'brouillon' ? 'selected' : '' }}>Brouillon</option>
-                        <option value="confirmee" {{ request('statut') == 'confirmee' ? 'selected' : '' }}>Confirmée</option>
-                        <option value="en_cours" {{ request('statut') == 'en_cours' ? 'selected' : '' }}>En cours</option>
-                        <option value="livree" {{ request('statut') == 'livree' ? 'selected' : '' }}>Livrée</option>
-                        <option value="annulee" {{ request('statut') == 'annulee' ? 'selected' : '' }}>Annulée</option>
-                        <option value="cloturee" {{ request('statut') == 'cloturee' ? 'selected' : '' }}>Clôturée</option>
-                        <option value="archivee" {{ request('statut') == 'archivee' ? 'selected' : '' }}>Archivée</option>
-                    </select>
-                </div>
+
                 <div class="col-md-2">
                     <input type="number" name="min_amount" class="form-control" placeholder="Montant Min" value="{{ request('min_amount') }}">
                 </div>
@@ -69,19 +58,7 @@
                                 <td>{{ $commande->client->nom }} {{ $commande->client->prenom }}</td>
                                 <td>{{ $commande->date_commande->format('d/m/Y') }}</td>
                                 <td>
-                                    @php
-                                        $badgeClass = match($commande->statut) {
-                                            'brouillon' => 'bg-secondary',
-                                            'confirmee' => 'bg-primary',
-                                            'en_cours' => 'bg-info',
-                                            'livree' => 'bg-success',
-                                            'annulee' => 'bg-danger',
-                                            'cloturee' => 'bg-dark',
-                                            'archivee' => 'bg-warning text-dark',
-                                            default => 'bg-secondary'
-                                        };
-                                    @endphp
-                                    <span class="badge {{ $badgeClass }}">{{ ucfirst($commande->statut) }}</span>
+                                    <span class="badge bg-secondary">Brouillon</span>
                                 </td>
                                 <td>
                                     <span class="badge bg-success">
