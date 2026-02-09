@@ -1,54 +1,73 @@
-<div class="modal fade" id="editProduitModal{{ $produit->id }}" tabindex="-1" aria-labelledby="editProduitModalLabel{{ $produit->id }}" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editProduitModalLabel{{ $produit->id }}">Modifier le Produit</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-start">
-                <form action="{{ route('produits.update', $produit->id) }}" method="POST">
-                    @csrf
-                    @method('PUT')
-                    
-                    <div class="mb-3">
-                        <label for="nom{{ $produit->id }}" class="form-label">Nom</label>
-                        <input type="text" class="form-control" id="nom{{ $produit->id }}" name="nom" value="{{ $produit->nom }}" required>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="description{{ $produit->id }}" class="form-label">Description</label>
-                        <textarea class="form-control" id="description{{ $produit->id }}" name="description" rows="2">{{ $produit->description }}</textarea>
-                    </div>
+@extends('layout.app')
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="prix{{ $produit->id }}" class="form-label">Prix (DH)</label>
-                            <input type="number" step="0.01" class="form-control" id="prix{{ $produit->id }}" name="prix" value="{{ $produit->prix }}" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="stock{{ $produit->id }}" class="form-label">Stock</label>
-                            <input type="number" class="form-control" id="stock{{ $produit->id }}" name="stock" value="{{ $produit->stock }}" required>
-                        </div>
-                    </div>
+@section('title', 'Modifier le Produit')
 
-                    <div class="mb-3">
-                        <label for="categorie_id{{ $produit->id }}" class="form-label">Catégorie</label>
-                        <select class="form-select" id="categorie_id{{ $produit->id }}" name="categorie_id" required>
+@section('content')
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-primary">Modifier le Produit</h3>
+        <a href="{{ route('produits.index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Retour
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form action="{{ route('produits.update', $produit->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="mb-3">
+                    <label for="nom" class="form-label fw-bold">Nom</label>
+                    <input type="text" class="form-control" id="nom" name="nom" value="{{ old('nom', $produit->nom) }}" required>
+                    @error('nom')
+                        <div class="text-danger small">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label fw-bold">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="2">{{ old('description', $produit->description) }}</textarea>
+                    @error('description')
+                        <div class="text-danger small">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="prix" class="form-label fw-bold">Prix (DH)</label>
+                        <input type="number" step="0.01" class="form-control" id="prix" name="prix" value="{{ old('prix', $produit->prix) }}" required>
+                        @error('prix')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="stock" class="form-label fw-bold">Stock</label>
+                        <input type="number" class="form-control" id="stock" name="stock" value="{{ old('stock', $produit->stock) }}" required>
+                        @error('stock')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="categorie_id" class="form-label fw-bold">Catégorie</label>
+                        <select class="form-select" id="categorie_id" name="categorie_id" required>
                             <option value="">Sélectionner une catégorie</option>
-                            @foreach(\App\Models\Categorie::all() as $categorie)
-                                <option value="{{ $categorie->id }}" {{ $produit->categorie_id == $categorie->id ? 'selected' : '' }}>
+                            @foreach($categories as $categorie)
+                                <option value="{{ $categorie->id }}" {{ old('categorie_id', $produit->categorie_id) == $categorie->id ? 'selected' : '' }}>
                                     {{ $categorie->intitule }}
                                 </option>
                             @endforeach
                         </select>
+                        @error('categorie_id')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
                     </div>
-
-                    <div class="text-end">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="submit" class="btn btn-warning">Modifier</button>
-                    </div>
-                </form>
-            </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-pencil-square me-1"></i> Modifier
+                    </button>
+                    <a href="{{ route('produits.index') }}" class="btn btn-secondary">Annuler</a>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+@endsection

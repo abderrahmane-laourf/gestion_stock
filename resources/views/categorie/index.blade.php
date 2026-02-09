@@ -47,18 +47,16 @@
                                 <td>{{ Str::limit($categorie->description, 50) }}</td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#showCategorieModal{{ $categorie->id }}" title="Afficher">
+                                        <a href="{{ route('categories.show', $categorie->id) }}" class="btn btn-sm btn-outline-info" title="Afficher">
                                             <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editCategorieModal{{ $categorie->id }}" title="Modifier">
+                                        </a>
+                                        <a href="{{ route('categories.edit', $categorie->id) }}" class="btn btn-sm btn-outline-warning" title="Modifier">
                                             <i class="bi bi-pencil-square"></i>
-                                        </button>
+                                        </a>
                                         <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $categorie->id }}" title="Supprimer">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
-                                    @include('categorie.edit')
-                                    @include('categorie.show')
                                     @include('categorie.delete')
                                 </td>
                             </tr>

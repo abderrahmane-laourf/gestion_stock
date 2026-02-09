@@ -17,6 +17,7 @@ Route::get('/dashboard', [DashboardController::class, 'index']); // Alias
 Route::get('/clients', [ClientController::class, 'index'])->name('clients.index');
 Route::get('/clients/create', [ClientController::class, 'create'])->name('clients.create');
 Route::post('/clients', [ClientController::class, 'store'])->name('clients.store');
+Route::get('/clients/{id}', [ClientController::class, 'show'])->name('clients.show');
 Route::get('/clients/{id}/edit', [ClientController::class, 'edit'])->name('clients.edit');
 Route::put('/clients/{id}', [ClientController::class, 'update'])->name('clients.update');
 Route::delete('/clients/{id}', [ClientController::class, 'destroy'])->name('clients.destroy');
@@ -25,6 +26,7 @@ Route::delete('/clients/{id}', [ClientController::class, 'destroy'])->name('clie
 Route::get('/categories', [CategorieController::class, 'index'])->name('categories.index');
 Route::get('/categories/create', [CategorieController::class, 'create'])->name('categories.create');
 Route::post('/categories', [CategorieController::class, 'store'])->name('categories.store');
+Route::get('/categories/{id}', [CategorieController::class, 'show'])->name('categories.show');
 Route::get('/categories/{id}/edit', [CategorieController::class, 'edit'])->name('categories.edit');
 Route::put('/categories/{id}', [CategorieController::class, 'update'])->name('categories.update');
 Route::delete('/categories/{id}', [CategorieController::class, 'destroy'])->name('categories.destroy');
@@ -33,6 +35,7 @@ Route::delete('/categories/{id}', [CategorieController::class, 'destroy'])->name
 Route::get('/produits', [ProduitController::class, 'index'])->name('produits.index');
 Route::get('/produits/create', [ProduitController::class, 'create'])->name('produits.create');
 Route::post('/produits', [ProduitController::class, 'store'])->name('produits.store');
+Route::get('/produits/{id}', [ProduitController::class, 'show'])->name('produits.show');
 Route::get('/produits/{id}/edit', [ProduitController::class, 'edit'])->name('produits.edit');
 Route::put('/produits/{id}', [ProduitController::class, 'update'])->name('produits.update');
 Route::delete('/produits/{id}', [ProduitController::class, 'destroy'])->name('produits.destroy');

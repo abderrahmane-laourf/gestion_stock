@@ -1,29 +1,45 @@
+@extends('layout.app')
 
-<div class="modal fade" id="showClientModal{{ $client->id }}" tabindex="-1" aria-labelledby="showClientModalLabel{{ $client->id }}" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="showClientModalLabel{{ $client->id }}">Afficher le client</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+@section('title', 'Détails du Client')
+
+@section('content')
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-primary">Détails du Client</h3>
+        <a href="{{ route('clients.index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Retour
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Nom</label>
+                    <p class="form-control-plaintext">{{ $client->nom }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Prénom</label>
+                    <p class="form-control-plaintext">{{ $client->prenom }}</p>
+                </div>
             </div>
-            <div class="modal-body text-start">
-                <div class="mb-3">
-                    <label for="nom{{ $client->id }}" class="form-label">Nom</label>
-                    <input type="text" class="form-control" id="nom{{ $client->id }}" name="nom" value="{{ $client->nom }}" required>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Téléphone</label>
+                    <p class="form-control-plaintext">{{ $client->telephone }}</p>
                 </div>
-                <div class="mb-3">
-                    <label for="prenom{{ $client->id }}" class="form-label">Prénom</label>
-                    <input type="text" class="form-control" id="prenom{{ $client->id }}" name="prenom" value="{{ $client->prenom }}" required>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Adresse</label>
+                    <p class="form-control-plaintext">{{ $client->adresse }}</p>
                 </div>
-                <div class="mb-3">
-                    <label for="telephone{{ $client->id }}" class="form-label">Téléphone</label>
-                    <input type="text" class="form-control" id="telephone{{ $client->id }}" name="telephone" value="{{ $client->telephone }}" required>
-                </div>
-                <div class="mb-3">
-                    <label for="adresse{{ $client->id }}" class="form-label">Adresse</label>
-                    <input type="text" class="form-control" id="adresse{{ $client->id }}" name="adresse" value="{{ $client->adresse }}" required>
-                </div>
+            </div>
+            <div class="d-flex gap-2 mt-3">
+                <a href="{{ route('clients.edit', $client->id) }}" class="btn btn-warning">
+                    <i class="bi bi-pencil-square me-1"></i> Modifier
+                </a>
+                <a href="{{ route('clients.index') }}" class="btn btn-secondary">Retour à la liste</a>
             </div>
         </div>
     </div>
 </div>
+@endsection

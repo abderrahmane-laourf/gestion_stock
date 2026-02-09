@@ -65,18 +65,16 @@
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#showProduitModal{{ $produit->id }}" title="Afficher">
+                                        <a href="{{ route('produits.show', $produit->id) }}" class="btn btn-sm btn-outline-info" title="Afficher">
                                             <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editProduitModal{{ $produit->id }}" title="Modifier">
+                                        </a>
+                                        <a href="{{ route('produits.edit', $produit->id) }}" class="btn btn-sm btn-outline-warning" title="Modifier">
                                             <i class="bi bi-pencil-square"></i>
-                                        </button>
+                                        </a>
                                         <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $produit->id }}" title="Supprimer">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
-                                    @include('produit.edit')
-                                    @include('produit.show')
                                     @include('produit.delete')
                                 </td>
                             </tr>

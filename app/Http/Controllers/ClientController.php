@@ -37,12 +37,15 @@ class ClientController extends Controller
         return redirect()->route('clients.index')->with('success', 'Client créé avec succès.');
     }
 
+
+
     /**
-     * Display the specified resource.
+     * Afficher les détails d'un client
      */
     public function show(string $id)
     {
-        //
+        $client = Client::findOrFail($id);
+        return view('client.show', compact('client'));
     }
 
     /**
@@ -51,7 +54,7 @@ class ClientController extends Controller
     public function edit(string $id)
     {
         $client = Client::findOrFail($id);
-        return view('client.edite', compact('client'));
+        return view('client.edit', compact('client'));
     }
 
     /**

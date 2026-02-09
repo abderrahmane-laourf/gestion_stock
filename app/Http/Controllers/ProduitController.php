@@ -52,6 +52,15 @@ class ProduitController extends Controller
     }
 
     /**
+     * Afficher les détails d'un produit
+     */
+    public function show($id)
+    {
+        $produit = Produit::with('categorie')->findOrFail($id);
+        return view('produit.show', compact('produit'));
+    }
+
+    /**
      * Show the form for editing the specified resource.
      */
     public function edit($id)

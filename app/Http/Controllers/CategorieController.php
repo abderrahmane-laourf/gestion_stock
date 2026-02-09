@@ -26,10 +26,19 @@ class CategorieController extends Controller
         $categorie = Categorie::create($valideted);
         return redirect()->route('categories.index')->with('success','categorie ajouter avec succes');
     }
+    /**
+     * Afficher les détails d'une catégorie
+     */
+    public function show($id)
+    {
+        $categorie = Categorie::findOrFail($id);
+        return view('categorie.show', compact('categorie'));
+    }
+
     public function edit($id)
     {
-        $categorie = Categorie::find($id);
-        return view('categorie.edit',compact('categorie'));
+        $categorie = Categorie::findOrFail($id);
+        return view('categorie.edit', compact('categorie'));
     }
     public function update(Request $request,$id)
     {

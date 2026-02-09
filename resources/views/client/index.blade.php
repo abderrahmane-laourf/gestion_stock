@@ -55,18 +55,16 @@
                                 <td>{{ Str::limit($client->adresse, 30) }}</td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#showClientModal{{ $client->id }}" title="Afficher">
+                                        <a href="{{ route('clients.show', $client->id) }}" class="btn btn-sm btn-outline-info" title="Afficher">
                                             <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editClientModal{{ $client->id }}" title="Modifier">
+                                        </a>
+                                        <a href="{{ route('clients.edit', $client->id) }}" class="btn btn-sm btn-outline-warning" title="Modifier">
                                             <i class="bi bi-pencil-square"></i>
-                                        </button>
-                                        <a class="btn btn-sm btn-outline-danger"  data-bs-toggle="modal" data-bs-target="#deleteModal{{ $client->id }}" title="Supprimer">
+                                        </a>
+                                        <a class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $client->id }}" title="Supprimer">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                 </div>
-                                    @include('client.edite')
-                                    @include('client.show')
                                     @include('client.delete')
                                 </td>
                             </tr>
