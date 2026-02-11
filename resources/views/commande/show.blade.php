@@ -8,7 +8,25 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h3 class="fw-bold text-primary mb-0">Commande #{{ $commande->id }}</h3>
-            <span class="badge bg-secondary">Brouillon</span>
+            @php
+                $statusColors = [
+                    'brouillon' => 'secondary',
+                    'confirmee' => 'primary',
+                    'en_cours' => 'info',
+                    'livree' => 'success',
+                    'annulee' => 'danger'
+                ];
+                $statusLabels = [
+                    'brouillon' => 'Brouillon',
+                    'confirmee' => 'Confirmée',
+                    'en_cours' => 'En cours',
+                    'livree' => 'Livrée',
+                    'annulee' => 'Annulée'
+                ];
+                $color = $statusColors[$commande->statut] ?? 'secondary';
+                $label = $statusLabels[$commande->statut] ?? ucfirst($commande->statut);
+            @endphp
+            <span class="badge bg-{{ $color }}">{{ $label }}</span>
         </div>
         
         <div class="btn-group">
@@ -23,7 +41,38 @@
 
     <!-- Action Bar -->
     <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body d-flex flex-wrap gap-2">
+        <div class="card-body d-flex flex-wrap gap-2 text-center">
+            
+            <!-- Validate (only if 'brouillon') -->
+            @if($commande->statut === 'brouillon')
+                <form action="{{ route('commandes.validate', $commande->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-success" onclick="return confirm('Voulez-vous vraiment valider cette commande ? Elle ne sera plus modifiable.')">
+                        <i class="bi bi-check-circle"></i> Valider
+                    </button>
+                </form>
+            @endif
+
+            <!-- Cancel (if not 'livree' or 'annulee') -->
+            @if(!in_array($commande->statut, ['livree', 'annulee']))
+                <form action="{{ route('commandes.cancel', $commande->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Voules-vous vraiment annuler cette commande ?')">
+                        <i class="bi bi-x-circle"></i> Annuler
+                    </button>
+                </form>
+            @endif
+
+            <!-- Deliver (only if 'confirmee' or 'en_cours') -->
+            @if(in_array($commande->statut, ['confirmee', 'en_cours']))
+                <form action="{{ route('commandes.deliver', $commande->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-primary" onclick="return confirm('Marquer la commande comme livrée ?')">
+                        <i class="bi bi-truck"></i> Livrer
+                    </button>
+                </form>
+            @endif
+
             <!-- Recalculate -->
             <form action="{{ route('commandes.recalculate', $commande->id) }}" method="POST">
                 @csrf

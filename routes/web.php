@@ -5,12 +5,20 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\ProduitController;
 use App\Http\Controllers\CommandeController;
-
+use App\Http\Controllers\HomeController;
 
 use App\Http\Controllers\DashboardController;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/dashboard', [DashboardController::class, 'index']); // Alias
+Route::get('/home', [HomeController::class, 'index'])->name('home.index');
+
+// les routes du panier (cart)
+Route::post('/home/add/{id}', [HomeController::class, 'add'])->name('home.add');
+Route::get('/cart', [HomeController::class, 'show_cart'])->name('home.cart');
+Route::delete('/cart/remove/{id}', [HomeController::class, 'remove_from_cart'])->name('home.remove');
+Route::delete('/cart/clear', [HomeController::class, 'clear_cart'])->name('home.clear');
+Route::get('/checkout', [HomeController::class, 'checkout'])->name('home.checkout');
+Route::post('/checkout', [HomeController::class, 'store_order'])->name('home.store_order');
 
 // les routes de client 
 
@@ -57,6 +65,9 @@ Route::get('/commandes/{id}/total', [CommandeController::class, 'calculateTotal'
 // Additional Commande Actions
 Route::post('/commandes/{id}/recalculate', [CommandeController::class, 'recalculate'])->name('commandes.recalculate');
 Route::post('/commandes/{id}/notify', [CommandeController::class, 'notifyClient'])->name('commandes.notify');
+Route::post('/commandes/{id}/cancel', [CommandeController::class, 'cancel'])->name('commandes.cancel');
+Route::post('/commandes/{id}/validate', [CommandeController::class, 'validateOrder'])->name('commandes.validate');
+Route::post('/commandes/{id}/deliver', [CommandeController::class, 'deliver'])->name('commandes.deliver');
 
 Route::get('/commandes/search/advanced', [CommandeController::class, 'search'])->name('commandes.search');
 Route::get('/commandes/{id}/print', [CommandeController::class, 'print'])->name('commandes.print');

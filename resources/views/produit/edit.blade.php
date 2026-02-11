@@ -13,13 +13,25 @@
 
     <div class="card shadow-sm border-0">
         <div class="card-body">
-            <form action="{{ route('produits.update', $produit->id) }}" method="POST">
+            <form action="{{ route('produits.update', $produit->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="mb-3">
                     <label for="nom" class="form-label fw-bold">Nom</label>
                     <input type="text" class="form-control" id="nom" name="nom" value="{{ old('nom', $produit->nom) }}" required>
                     @error('nom')
+                        <div class="text-danger small">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="mb-3">
+                    <label for="imageURL" class="form-label fw-bold">Image</label>
+                    @if($produit->imageURL)
+                        <div class="mb-2">
+                            <img src="{{ asset('storage/' . $produit->imageURL) }}" alt="Image du produit" class="img-thumbnail" style="max-height: 150px;">
+                        </div>
+                    @endif
+                    <input type="file" class="form-control" id="imageURL" name="imageURL" accept="image/*">
+                    @error('imageURL')
                         <div class="text-danger small">{{ $message }}</div>
                     @enderror
                 </div>

@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Produit;
 use App\Models\Categorie;
 
+use Illuminate\Support\Facades\Storage;
+
 class ProduitController extends Controller
 {
     /**
@@ -39,16 +41,19 @@ class ProduitController extends Controller
     {
         $validated = $request->validate([
             'nom' => 'required|max:255',
+            'imageURL' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'description' => 'nullable',
             'prix' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'categorie_id' => 'required|exists:categories,id',
         ]);
 
+        if ($request->hasFile('imageURL')) {
+            $imagePath = $request->file('imageURL')->store('products/images', 'public');
+            $validated['imageURL'] = $imagePath;
+        }
         Produit::create($validated);
-
-        return redirect()->route('produits.index')
-            ->with('success', 'Produit créé avec succès.');
+        return redirect()->route('produits.index');
     }
 
     /**
@@ -77,6 +82,7 @@ class ProduitController extends Controller
     {
         $validated = $request->validate([
             'nom' => 'required|max:255',
+            'imageURL' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'description' => 'nullable',
             'prix' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
@@ -84,6 +90,16 @@ class ProduitController extends Controller
         ]);
 
         $produit = Produit::findOrFail($id);
+
+        if ($request->hasFile('imageURL')) {
+            // Supprimer l'ancienne image si elle existe
+            if ($produit->imageURL) {
+                Storage::disk('public')->delete($produit->imageURL);
+            }
+            $imagePath = $request->file('imageURL')->store('products/images', 'public');
+            $validated['imageURL'] = $imagePath;
+        }
+
         $produit->update($validated);
 
         return redirect()->route('produits.index')
@@ -96,6 +112,12 @@ class ProduitController extends Controller
     public function destroy($id)
     {
         $produit = Produit::findOrFail($id);
+        
+        // Supprimer l'image associée si elle existe
+        if ($produit->imageURL) {
+            Storage::disk('public')->delete($produit->imageURL);
+        }
+
         $produit->delete();
 
         return redirect()->route('produits.index')

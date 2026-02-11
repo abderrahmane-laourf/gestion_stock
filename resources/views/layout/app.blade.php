@@ -22,10 +22,15 @@
         #sidebar {
             min-width: 250px;
             max-width: 250px;
-            min-height: 100vh;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
             background: #343a40;
             color: #fff;
+            overflow-y: auto;
             transition: all 0.3s;
+            z-index: 1000;
         }
         #sidebar .sidebar-header {
             padding: 20px;
@@ -34,6 +39,7 @@
         #content {
             width: 100%;
             padding: 20px;
+            margin-left: 250px; /* Same as sidebar width */
             min-height: 100vh;
             transition: all 0.3s;
         }
@@ -78,6 +84,21 @@
                     <a href="{{ route('commandes.index') }}" class="text-white text-decoration-none d-block p-2 rounded hover-effect
                         {{ request()->is('commandes*') ? 'bg-primary' : '' }}">
                         <i class="bi bi-cart-check me-2"></i> Commandes
+                    </a>
+                </li>
+                <li class="mb-2">
+                    <hr class="text-white">
+                </li>
+                <li class="mb-2">
+                    <a href="{{ route('home.index') }}" class="text-white text-decoration-none d-block p-2 rounded hover-effect
+                        {{ request()->routeIs('home.index') ? 'bg-primary' : '' }}">
+                        <i class="bi bi-shop me-2"></i> Catalogue
+                    </a>
+                </li>
+                <li class="mb-2">
+                    <a href="{{ route('home.cart') }}" class="text-white text-decoration-none d-block p-2 rounded hover-effect
+                        {{ request()->routeIs('home.cart') ? 'bg-primary' : '' }}">
+                        <i class="bi bi-cart3 me-2"></i> Panier
                     </a>
                 </li>
             </ul>

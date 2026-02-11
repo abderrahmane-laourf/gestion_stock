@@ -13,12 +13,19 @@
 
     <div class="card shadow-sm border-0">
         <div class="card-body">
-            <form action="{{ route('produits.store') }}" method="POST">
+            <form action="{{ route('produits.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="mb-3">
                     <label for="nom" class="form-label fw-bold">Nom</label>
                     <input type="text" class="form-control" id="nom" name="nom" value="{{ old('nom') }}" required>
                     @error('nom')
+                        <div class="text-danger small">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="mb-3">
+                    <label for="imageURL" class="form-label fw-bold">Image</label>
+                    <input type="file" class="form-control" id="imageURL" name="imageURL" accept="image/*">
+                    @error('imageURL')
                         <div class="text-danger small">{{ $message }}</div>
                     @enderror
                 </div>

@@ -35,6 +35,7 @@
                 <table class="table table-hover table-striped align-middle mb-0">
                     <thead class="table-secondary text-center">
                         <tr>
+                            <th scope="col">Image</th>
                             <th scope="col">Nom</th>
                             <th scope="col">Description</th>
                             <th scope="col">Prix</th>
@@ -46,6 +47,13 @@
                     <tbody>
                         @forelse($produits as $produit)
                             <tr class="text-center">
+                                <td>
+                                    @if($produit->imageURL)
+                                        <img src="{{ asset('storage/' . $produit->imageURL) }}" alt="{{ $produit->nom }}" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                                    @else
+                                        <span class="text-muted"><i class="bi bi-image"></i></span>
+                                    @endif
+                                </td>
                                 <td class="fw-bold">{{ $produit->nom }}</td>
                                 <td>{{ Str::limit($produit->description, 40) }}</td>
                                 <td>
@@ -80,7 +88,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center py-4 text-muted">
+                                <td colspan="7" class="text-center py-4 text-muted">
                                     <i class="bi bi-box-seam display-4 d-block mb-3"></i>
                                     Aucun produit trouvé.
                                 </td>

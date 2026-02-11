@@ -67,13 +67,7 @@ class CommandeController extends Controller
         ]);
 
         // Create commande
-        $commande = Commande::create([
-            'client_id' => $validated['client_id'],
-            'date_commande' => $validated['date_commande'],
-            'adresse_livraison' => $validated['adresse_livraison'],
-            'statut' => 'brouillon',
-            'montant_total' => 0,
-        ]);
+        $commande = Commande::create($validated);
 
         $commande->log('created', 'Commande créée');
 
@@ -294,4 +288,55 @@ class CommandeController extends Controller
     }
 
 
+
+    /**
+     * Annuler une commande
+     */
+    public function cancel($id)
+    {
+        $commande = Commande::findOrFail($id);
+        
+        if ($commande->statut === 'livree') {
+            return back()->with('error', 'Impossible d\'annuler une commande déjà livrée.');
+        }
+
+        $commande->update(['statut' => 'annulee']);
+        $commande->log('status_change', 'Commande annulée');
+
+        return back()->with('success', 'Commande annulée avec succès.');
+    }
+
+    /**
+     * Valider une commande (verrouille les modifications)
+     */
+    public function validateOrder($id)
+    {
+        $commande = Commande::findOrFail($id);
+
+        if ($commande->statut === 'annulee') {
+            return back()->with('error', 'Impossible de valider une commande annulée.');
+        }
+
+        $commande->update(['statut' => 'confirmee']);
+        $commande->log('status_change', 'Commande validée');
+
+        return back()->with('success', 'Commande validée avec succès.');
+    }
+
+    /**
+     * Marquer une commande comme livrée
+     */
+    public function deliver($id)
+    {
+        $commande = Commande::findOrFail($id);
+
+        if ($commande->statut !== 'confirmee') {
+            return back()->with('error', 'La commande doit être validée avant d\'être livrée.');
+        }
+
+        $commande->update(['statut' => 'livree']);
+        $commande->log('status_change', 'Commande livrée');
+
+        return back()->with('success', 'Commande marquée comme livrée.');
+    }
 }

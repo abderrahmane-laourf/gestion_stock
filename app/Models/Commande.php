@@ -12,6 +12,7 @@ class Commande extends Model
     protected $fillable = [
         'client_id',
         'date_commande',
+        'statut',
         'adresse_livraison',
         'montant_total',
     ];

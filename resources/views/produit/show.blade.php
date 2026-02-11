@@ -14,6 +14,11 @@
     <div class="card shadow-sm border-0">
         <div class="card-body">
             <div class="mb-3">
+                @if($produit->imageURL)
+                    <div class="mb-3">
+                        <img src="{{ asset('storage/' . $produit->imageURL) }}" alt="Image du produit" class="img-fluid rounded" style="max-height: 300px;">
+                    </div>
+                @endif
                 <label class="form-label fw-bold">Nom</label>
                 <p class="form-control-plaintext">{{ $produit->nom }}</p>
             </div>
