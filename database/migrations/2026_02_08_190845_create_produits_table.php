@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nom');
             $table->string('description');
-            $table->integer('prix');
+            $table->decimal('prix', 8, 2);
             $table->integer('stock');
             $table->foreignId('categorie_id')->constrained()->cascadeOnDelete();
             $table->timestamps();

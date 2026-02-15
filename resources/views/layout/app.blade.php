@@ -101,6 +101,17 @@
                         <i class="bi bi-cart3 me-2"></i> Panier
                     </a>
                 </li>
+                
+                @auth
+                <li class="mb-2 mt-auto">
+                    <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" class="text-white text-decoration-none d-block p-2 rounded bg-danger border-0 w-100 text-start">
+                            <i class="bi bi-box-arrow-right me-2"></i> Logout ({{ auth()->user()->username }})
+                        </button>
+                    </form>
+                </li>
+                @endauth
             </ul>
         </nav>
 
