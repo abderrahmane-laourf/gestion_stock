@@ -1,0 +1,41 @@
+image: php:8.2
+
+# Cache composer dependencies so subsequent runs are faster
+cache:
+  paths:
+    - vendor/
+
+stages:
+  - test
+  - deploy
+
+# Job 1: Run Laravel Tests
+run_tests:
+  stage: test
+  before_script:
+    # Install system dependencies
+    - apt-get update -y && apt-get install -y openssl zip unzip git libonig-dev libzip-dev
+    # Install PHP extensions required by Laravel
+    - docker-php-ext-install mbstring zip pcntl
+    # Install Composer
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    # Install project dependencies
+    - composer install --no-ansi --no-interaction --no-progress --prefer-dist
+    # Setup environment file
+    - cp .env.example .env
+    - php artisan key:generate
+  script:
+    # Run the tests
+    - php artisan test
+
+# Job 2: Deploy to Production (Example)
+deploy_production:
+  stage: deploy
+  script:
+    - echo "Starting deployment..."
+    # In a real scenario, you would use SSH to connect to your server
+    # Example: ssh user@your-server.com "cd /var/www/html && git pull origin main && php artisan migrate"
+    - echo "Deployment finished successfully!"
+  only:
+    # This job only runs when code is pushed to the 'main' branch
+    - main
