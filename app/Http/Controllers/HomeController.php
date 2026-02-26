@@ -31,6 +31,7 @@ class HomeController extends Controller
         // Vérifier si le produit est déjà dans le panier
         if (isset($panier[$id])) {
             $panier[$id]['quantite']++;
+            
         } else {
             $panier[$id] = [
                 'id' => $produit->id,

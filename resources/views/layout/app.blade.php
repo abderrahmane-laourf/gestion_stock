@@ -87,6 +87,12 @@
                     </a>
                 </li>
                 <li class="mb-2">
+                    <a href="{{ route('users.index') }}" class="text-white text-decoration-none d-block p-2 rounded hover-effect
+                        {{ request()->is('users*') ? 'bg-primary' : '' }}">
+                        <i class="bi bi-person-gear me-2"></i> Utilisateurs
+                    </a>
+                </li>
+                <li class="mb-2">
                     <hr class="text-white">
                 </li>
                 <li class="mb-2">

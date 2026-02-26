@@ -8,6 +8,7 @@ use App\Http\Controllers\ProduitController;
 use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UserController;
 
 // Auth Routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -77,6 +78,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/commandes/search/advanced', [CommandeController::class, 'search'])->name('commandes.search');
     Route::get('/commandes/{id}/print', [CommandeController::class, 'print'])->name('commandes.print');
     Route::get('/commandes/{id}/history', [CommandeController::class, 'history'])->name('commandes.history');
+
+    // ── User Management Routes ──────────────────────────────
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    // Special actions
+    Route::post('/users/{user}/role', [UserController::class, 'updateRole'])->name('users.updateRole');
+    Route::post('/users/{user}/image', [UserController::class, 'updateImage'])->name('users.updateImage');
 });
 
 Route::get('/home', [HomeController::class, 'index'])->name('home.index');
