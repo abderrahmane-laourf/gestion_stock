@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\ProduitController;
@@ -10,21 +10,19 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 
-// Auth Routes
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/', function () {
+    return view('welcome');
+});
 
-// Password Reset Routes
-Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
-Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
-Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
-Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
-// Protected Routes
-Route::middleware(['auth'])->group(function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
     // les routes du panier (cart)
     Route::post('/home/add/{id}', [HomeController::class, 'add'])->name('home.add');
     Route::get('/cart', [HomeController::class, 'show_cart'])->name('home.cart');
@@ -85,7 +83,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/commandes/{id}/print', [CommandeController::class, 'print'])->name('commandes.print');
     Route::get('/commandes/{id}/history', [CommandeController::class, 'history'])->name('commandes.history');
 
-    // ── User Management Routes ──────────────────────────────
+    // User Management Routes
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
@@ -93,9 +91,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
-    // Special actions
     Route::post('/users/{user}/role', [UserController::class, 'updateRole'])->name('users.updateRole');
     Route::post('/users/{user}/image', [UserController::class, 'updateImage'])->name('users.updateImage');
 });
 
-Route::get('/home', [HomeController::class, 'index'])->name('home.index');
+require __DIR__.'/auth.php';
